@@ -12,8 +12,8 @@ const URL = process.env.URL;
 exports.handler = function(event, context, callback) {
   const key = event.queryStringParameters.key;
 
-  const widthMatch = key.match(/w_(\d+)/)
-  const heightMatch = key.match(/h_(\d+)/)
+  const widthMatch = key.match(/w_(\d+)/);
+  const heightMatch = key.match(/h_(\d+)/);
   
   const width = widthMatch && parseInt(widthMatch[1], 10);
   const height = heightMatch && parseInt(heightMatch[1], 10);
