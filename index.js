@@ -8,10 +8,9 @@ const Sharp = require('sharp');
 
 exports.handler = function(event, context, callback) {
   const BUCKET = event.queryStringParameters.bucket;
-  const URL = `http://${BUCKET}.s3-website-eu-west-1.amazonaws.com`;
+  const URL = event.queryStringParameters.url;
 
   const key = event.queryStringParameters.key;
-
 
   const widthMatch = key.match(/w_(\d+)/);
   const heightMatch = key.match(/h_(\d+)/);
