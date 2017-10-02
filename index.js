@@ -29,6 +29,7 @@ exports.handler = function(event, context, callback) {
         Body: buffer,
         Bucket: BUCKET,
         ContentType: 'image/png',
+        CacheControl: `max-age=${14 * 24 * 60 * 60}`,
         Key: key,
       }).promise()
     )
