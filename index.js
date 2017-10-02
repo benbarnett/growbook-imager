@@ -6,11 +6,12 @@ const S3 = new AWS.S3({
 });
 const Sharp = require('sharp');
 
-const BUCKET = process.env.BUCKET;
-const URL = process.env.URL;
-
 exports.handler = function(event, context, callback) {
+  const BUCKET = event.queryStringParameters.bucket;
+  const URL = `http://${BUCKET}.s3-website-eu-west-1.amazonaws.com`;
+
   const key = event.queryStringParameters.key;
+
 
   const widthMatch = key.match(/w_(\d+)/);
   const heightMatch = key.match(/h_(\d+)/);
