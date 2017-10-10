@@ -32,16 +32,16 @@ exports.handler = function(event, context, callback) {
         if (crop) {
           const [, x, y, cropWidth, cropHeight] = crop;
 
-          const pixelX = width * (x / 100);
-          const pixelY = height * (y / 100);
-          const pixelWidth = width * (cropWidth / 100);
-          const pixelHeight = height * (cropHeight / 100);
+          const pixelX = parseInt(width * (x / 100), 10);
+          const pixelY = parseInt(height * (y / 100), 10);
+          const pixelWidth = parseInt(width * (cropWidth / 100), 10);
+          const pixelHeight = parseInt(height * (cropHeight / 100), 10);
 
           return image.extract({
             left: pixelX,
             top: pixelY,
             width: pixelWidth,
-            height: pixelWidth
+            height: pixelHeight
           });
         }
 
