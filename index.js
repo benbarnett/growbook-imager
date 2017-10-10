@@ -19,17 +19,21 @@ exports.handler = function(event, context, callback) {
   
   const width = widthMatch && parseInt(widthMatch[1], 10);
   const height = heightMatch && parseInt(heightMatch[1], 10);
-  // const [, x, y, cropWidth, cropHeight] = cropMatch && cropMatch;
+  const crop = cropMatch;
 
 
   const originalKey = key.split('/').pop();
   
   S3.getObject({Bucket: BUCKET, Key: originalKey}).promise()
     .then(data => {
-      return Sharp(data.Body)
-      .resize(width, height)
-      .toFormat('png')
-      .toBuffer()
+      const image = Sharp(data.Body).resize(width, height);
+
+      if (crop) {
+        const [, x, y, cropWidth, cropHeight] = crop;
+        console.log(x, y, cropWidth, cropHeight);
+      }
+
+      return image.toFormat('png').toBuffer();
     })
     .then(buffer => S3.putObject({
         Body: buffer,
