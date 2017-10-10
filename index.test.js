@@ -19,17 +19,13 @@ const s3Stub = {
   putObject: putObjectStub
 };
 
-const resizeStub = sinon.stub().returnsThis();
-const toFormatStub = sinon.stub().returnsThis();
-const toBufferStub = sinon.stub().returnsThis();
+const Sharp = require('sharp');
+const resizeSpy = sinon.spy(Sharp.prototype, 'resize');
+const extractSpy = sinon.spy(Sharp.prototype, 'extract');
 
 const index = proxyquire('./index', {
   'aws-sdk': {'S3': sinon.stub().returns(s3Stub)},
-  'sharp': sinon.stub().returns({
-    resize: resizeStub,
-    toFormat: toFormatStub,
-    toBuffer: toBufferStub
-  })
+  'sharp': Sharp
 });
 
 const fakeEvent = props => ({
@@ -46,9 +42,6 @@ describe('#Growbook Image Service', () => {
   afterEach(() => {
     getObjectStub.resetHistory();
     putObjectStub.resetHistory();
-    resizeStub.resetHistory();
-    toFormatStub.resetHistory();
-    toBufferStub.resetHistory();
   });
   
   it('calls S3.getObject with the given key and bucket', function(done) {
@@ -73,16 +66,23 @@ describe('#Growbook Image Service', () => {
   it('resizes according to url params', function(done) {
     callHandler({ key: 'w_500/h_20/test'}, function(err, data) {
       process.nextTick(function() {
-        expect(resizeStub).to.have.been.calledWith(500, 20);
-        done();
+        process.nextTick(function() {
+          expect(resizeSpy).to.have.been.calledWith(500, 20);
+          done();
+        });
       });
     });
   });
 
   it('crops according to url params', function(done) {
-    callHandler({ key: 'c_10,20,30,40/test'}, function(err, data) {
+    callHandler({ key: 'c_50,50,10,10/test'}, function(err, data) {
       process.nextTick(function() {
-        // expect(resizeStub).to.have.been.calledWith(500, 20);
+        expect(extractSpy).to.have.been.calledWith({
+          left: 250,
+          top: 166.5,
+          width: 50,
+          height: 50
+        });
         done();
       });
     });

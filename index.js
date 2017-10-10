@@ -26,14 +26,28 @@ exports.handler = function(event, context, callback) {
   
   S3.getObject({Bucket: BUCKET, Key: originalKey}).promise()
     .then(data => {
-      const image = Sharp(data.Body).resize(width, height);
+      const image = Sharp(data.Body);
 
-      if (crop) {
-        const [, x, y, cropWidth, cropHeight] = crop;
-        console.log(x, y, cropWidth, cropHeight);
-      }
+      return image.metadata().then(({ width, height }) => {
+        if (crop) {
+          const [, x, y, cropWidth, cropHeight] = crop;
+          
+          const pixelX = width * (x / 100);
+          const pixelY = height * (y / 100);
+          const pixelWidth = width * (cropWidth / 100);
+          const pixelHeight = height * (cropHeight / 100);
 
-      return image.toFormat('png').toBuffer();
+          return image.extract({
+            left: pixelX,
+            top: pixelY,
+            width: pixelWidth,
+            height: pixelWidth
+          });
+
+        }
+      }).then(() => {
+        return image.resize(width, height).toFormat('png').toBuffer();
+      })
     })
     .then(buffer => S3.putObject({
         Body: buffer,
