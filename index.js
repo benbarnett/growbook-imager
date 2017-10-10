@@ -31,7 +31,7 @@ exports.handler = function(event, context, callback) {
       return image.metadata().then(({ width, height }) => {
         if (crop) {
           const [, x, y, cropWidth, cropHeight] = crop;
-          
+
           const pixelX = width * (x / 100);
           const pixelY = height * (y / 100);
           const pixelWidth = width * (cropWidth / 100);
@@ -43,8 +43,9 @@ exports.handler = function(event, context, callback) {
             width: pixelWidth,
             height: pixelWidth
           });
-
         }
+
+        return image;
       }).then(() => {
         return image.resize(width, height).toFormat('png').toBuffer();
       })

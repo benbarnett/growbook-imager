@@ -87,4 +87,21 @@ describe('#Growbook Image Service', () => {
       });
     });
   });
+
+  it('resizes and crops according to url params', function(done) {
+    callHandler({ key: 'c_50,50,10,10/w_500/h_20/test'}, function(err, data) {
+      process.nextTick(function() {
+        process.nextTick(function() {
+          expect(resizeSpy).to.have.been.calledWith(500, 20);
+          expect(extractSpy).to.have.been.calledWith({
+            left: 250,
+            top: 166.5,
+            width: 50,
+            height: 50
+          });
+          done();
+        });
+      });
+    });
+  });
 });
